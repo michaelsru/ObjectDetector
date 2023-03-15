@@ -24,11 +24,11 @@ extension ViewController {
             }
         })
     }
-    
+
     func extractDetections(_ results: [VNObservation]) {
 //        print("Extract Detections")
         detectionLayer.sublayers = nil
-        
+
         for observation in results where observation is VNRecognizedObjectObservation {
             print("observation")
             guard let objectObservation = observation as? VNRecognizedObjectObservation else { continue }
@@ -41,9 +41,14 @@ extension ViewController {
             let boxLayer = self.drawBoundingBox(transformedBounds)
 
             detectionLayer.addSublayer(boxLayer)
+
+            // Draw text label with confidence level
+            let labelText = "\(objectObservation.labels[0].identifier) \(String(format: "%.2f", objectObservation.confidence))"
+            let textLayer = self.drawTextLayer(bounds: transformedBounds, labelText: labelText)
+            detectionLayer.addSublayer(textLayer)
         }
     }
-    
+
     func setupLayers() {
         detectionLayer = CALayer()
         detectionLayer.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
@@ -51,11 +56,11 @@ extension ViewController {
             self!.view.layer.addSublayer(self!.detectionLayer)
         }
     }
-    
+
     func updateLayers() {
         detectionLayer?.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
     }
-    
+
     func drawBoundingBox(_ bounds: CGRect) -> CALayer {
         let boxLayer = CALayer()
         boxLayer.frame = bounds
@@ -64,7 +69,18 @@ extension ViewController {
         boxLayer.cornerRadius = 4
         return boxLayer
     }
-    
+
+    func drawTextLayer(bounds: CGRect, labelText: String) -> CATextLayer {
+        let textLayer = CATextLayer()
+        textLayer.string = labelText
+        textLayer.fontSize = 11
+        textLayer.foregroundColor = UIColor.white.cgColor
+        textLayer.backgroundColor = UIColor.black.withAlphaComponent(0.6).cgColor
+        textLayer.cornerRadius = 4
+        textLayer.frame = CGRect(x: bounds.origin.x, y: bounds.origin.y - 20, width: bounds.size.width, height: 20)
+        return textLayer
+    }
+
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:]) // Create handler to perform request on the buffer
