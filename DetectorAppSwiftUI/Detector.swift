@@ -6,7 +6,7 @@ extension ViewController {
     
     func setupDetector() {
 //        let modelURL = Bundle.main.url(forResource: "YOLOv3TinyInt8LUT", withExtension: "mlmodelc")
-        let modelURL = Bundle.main.url(forResource: "yolov7", withExtension: "mlmodelc")
+        let modelURL = Bundle.main.url(forResource: "doors_stairs", withExtension: "mlmodelc")
     
         do {
             let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL!))

@@ -16,6 +16,7 @@
 		63E9CD6928AACFB000FD0BAA /* YOLOv3TinyInt8LUT.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 63E9CD6828AACFB000FD0BAA /* YOLOv3TinyInt8LUT.mlmodel */; };
 		D0078E7029BF10A500025C9C /* yolov7.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D0078E6F29BF10A500025C9C /* yolov7.mlmodel */; };
 		D0078E7229BF128400025C9C /* yolov7-tiny.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D0078E7129BF128400025C9C /* yolov7-tiny.mlmodel */; };
+		D021A9E629C7E1760005E67D /* doors_stairs.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D021A9E529C7E1760005E67D /* doors_stairs.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		63E9CD6828AACFB000FD0BAA /* YOLOv3TinyInt8LUT.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = YOLOv3TinyInt8LUT.mlmodel; sourceTree = "<group>"; };
 		D0078E6F29BF10A500025C9C /* yolov7.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = yolov7.mlmodel; sourceTree = "<group>"; };
 		D0078E7129BF128400025C9C /* yolov7-tiny.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = "yolov7-tiny.mlmodel"; sourceTree = "<group>"; };
+		D021A9E529C7E1760005E67D /* doors_stairs.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = doors_stairs.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 				6302C29D289FBCAC00D61B61 /* ContentView.swift */,
 				6302C2A9289FBF5F00D61B61 /* ViewController.swift */,
 				63E9CD6628AACF1D00FD0BAA /* Detector.swift */,
+				D021A9E529C7E1760005E67D /* doors_stairs.mlmodel */,
 				D0078E6F29BF10A500025C9C /* yolov7.mlmodel */,
 				D0078E7129BF128400025C9C /* yolov7-tiny.mlmodel */,
 				63E9CD6828AACFB000FD0BAA /* YOLOv3TinyInt8LUT.mlmodel */,
@@ -152,6 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D021A9E629C7E1760005E67D /* doors_stairs.mlmodel in Sources */,
 				6302C2AA289FBF5F00D61B61 /* ViewController.swift in Sources */,
 				63E9CD6928AACFB000FD0BAA /* YOLOv3TinyInt8LUT.mlmodel in Sources */,
 				6302C29E289FBCAC00D61B61 /* ContentView.swift in Sources */,
