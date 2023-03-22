@@ -6,7 +6,7 @@ extension ViewController {
     
     func setupDetector() {
 //        let modelURL = Bundle.main.url(forResource: "YOLOv3TinyInt8LUT", withExtension: "mlmodelc")
-        let modelURL = Bundle.main.url(forResource: "doors_stairs", withExtension: "mlmodelc")
+        let modelURL = Bundle.main.url(forResource: "yolov7", withExtension: "mlmodelc")
     
         do {
             let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL!))
@@ -65,7 +65,7 @@ extension ViewController {
         let boxLayer = CALayer()
         boxLayer.frame = bounds
         boxLayer.borderWidth = 3.0
-        boxLayer.borderColor = CGColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        boxLayer.borderColor = CGColor.init(red: 255.0, green: 255.0, blue: 255.0, alpha: 1.0)
         boxLayer.cornerRadius = 4
         return boxLayer
     }
@@ -74,8 +74,8 @@ extension ViewController {
         let textLayer = CATextLayer()
         textLayer.string = labelText
         textLayer.fontSize = 11
-        textLayer.foregroundColor = UIColor.white.cgColor
-        textLayer.backgroundColor = UIColor.black.withAlphaComponent(0.6).cgColor
+        textLayer.foregroundColor = UIColor.black.withAlphaComponent(0.6).cgColor
+        textLayer.backgroundColor = UIColor.white.cgColor
         textLayer.cornerRadius = 4
         textLayer.frame = CGRect(x: bounds.origin.x, y: bounds.origin.y - 20, width: bounds.size.width, height: 20)
         return textLayer

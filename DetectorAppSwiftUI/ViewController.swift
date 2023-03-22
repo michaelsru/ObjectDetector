@@ -2,7 +2,11 @@ import UIKit
 import SwiftUI
 import AVFoundation
 import Vision
+import Combine
 
+class PreviewState: ObservableObject {
+    @Published var isPreviewEnabled: Bool = true
+}
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var permissionGranted = false // Flag for permission
@@ -10,6 +14,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     private let sessionQueue = DispatchQueue(label: "sessionQueue")
     private var previewLayer = AVCaptureVideoPreviewLayer()
     var screenRect: CGRect! = nil // For view dimensions
+    var previewState: PreviewState!
+    private var isPreviewEnabledCancellable: AnyCancellable?
+
     
     // Detector
     private var videoOutput = AVCaptureVideoDataOutput()
@@ -29,6 +36,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             
             self.captureSession.startRunning()
         }
+        setupBindings()
     }
     
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -60,6 +68,15 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         updateLayers()
     }
     
+    // Add this method to the ViewController class
+    func setupBindings() {
+        isPreviewEnabledCancellable = previewState.$isPreviewEnabled
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] newValue in
+                self?.previewLayer.isHidden = !newValue
+        })
+    }
+
     func checkPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
             // Permission has been granted before
@@ -94,7 +111,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             print("Can not get AVCaptureDeviceInput")
             return
         }
-           
+
         guard captureSession.canAddInput(videoDeviceInput) else { return }
         captureSession.addInput(videoDeviceInput)
                          
@@ -120,10 +137,14 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 }
 
 struct HostedViewController: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        return ViewController()
-        }
+    @ObservedObject var previewState: PreviewState
 
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
+    func makeUIViewController(context: Context) -> UIViewController {
+        let viewController = ViewController()
+        viewController.previewState = previewState
+        return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    }
 }
