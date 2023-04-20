@@ -4,62 +4,75 @@ import UIKit
 
 extension ViewController {
     
-    func setupDetector() {
-        let modelName = "04172023_best"
+    func setupDetector(modelName: String) -> [VNRequest] {
         let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodelc")
-    
+
         do {
             let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL!))
-            let recognitions = VNCoreMLRequest(model: visionModel, completionHandler: detectionDidComplete)
-            self.requests = [recognitions]
-            previewState.modelName = modelName
+
+            let completionHandler: VNRequestCompletionHandler = (modelName == "yolov7") ? { [weak self] request, error in
+                self?.detectionDidComplete(request: request, error: error, layer: (self?.yolov7DetectionLayer)!)
+            } : { [weak self] request, error in
+                self?.detectionDidComplete(request: request, error: error, layer: (self?.bestModelDetectionLayer)!)
+            }
+
+            let recognitions = VNCoreMLRequest(model: visionModel, completionHandler: completionHandler)
+            previewState.modelName.append(modelName)
+            return [recognitions]
         } catch let error {
             print(error)
+            return []
         }
     }
     
-    func detectionDidComplete(request: VNRequest, error: Error?) {
+    func detectionDidComplete(request: VNRequest, error: Error?, layer: CALayer) {
         DispatchQueue.main.async(execute: {
             if let results = request.results {
-                self.extractDetections(results)
+                self.extractDetections(results, layer: layer)
             }
         })
     }
 
-    func extractDetections(_ results: [VNObservation]) {
-//        print("Extract Detections")
-        detectionLayer.sublayers = nil
+    func extractDetections(_ results: [VNObservation], layer: CALayer) {
+        layer.sublayers = nil
 
         for observation in results where observation is VNRecognizedObjectObservation {
             print("observation")
             guard let objectObservation = observation as? VNRecognizedObjectObservation else { continue }
-            
+
             // Transformations
             let objectBounds = VNImageRectForNormalizedRect(objectObservation.boundingBox, Int(screenRect.size.width), Int(screenRect.size.height))
             print("id:\(objectObservation.labels[0].identifier) confidence:\(objectObservation.confidence) (\(round(objectBounds.minX)), \(round(objectBounds.minY))), (\(round(objectBounds.maxX)), \(round(objectBounds.maxY)))")
             let transformedBounds = CGRect(x: objectBounds.minX, y: screenRect.size.height - objectBounds.maxY, width: objectBounds.maxX - objectBounds.minX, height: objectBounds.maxY - objectBounds.minY)
-            
+
             let boxLayer = self.drawBoundingBox(transformedBounds)
 
-            detectionLayer.addSublayer(boxLayer)
+            layer.addSublayer(boxLayer)
 
             // Draw text label with confidence level
             let labelText = "\(objectObservation.labels[0].identifier) \(String(format: "%.2f", objectObservation.confidence))"
             let textLayer = self.drawTextLayer(bounds: transformedBounds, labelText: labelText)
-            detectionLayer.addSublayer(textLayer)
+            layer.addSublayer(textLayer)
         }
     }
 
     func setupLayers() {
-        detectionLayer = CALayer()
-        detectionLayer.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+        yolov7DetectionLayer = CALayer()
+        yolov7DetectionLayer.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+
+        bestModelDetectionLayer = CALayer()
+        bestModelDetectionLayer.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+
         DispatchQueue.main.async { [weak self] in
-            self!.view.layer.addSublayer(self!.detectionLayer)
+            self!.view.layer.addSublayer(self!.yolov7DetectionLayer)
+            self!.view.layer.addSublayer(self!.bestModelDetectionLayer)
         }
     }
 
     func updateLayers() {
-        detectionLayer?.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+        yolov7DetectionLayer?.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+        bestModelDetectionLayer?.frame = CGRect(x: 0, y: 0, width: screenRect.size.width, height: screenRect.size.height)
+
     }
 
     func drawBoundingBox(_ bounds: CGRect) -> CALayer {
@@ -87,7 +100,12 @@ extension ViewController {
         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:]) // Create handler to perform request on the buffer
 
         do {
-            try imageRequestHandler.perform(self.requests) // Schedules vision requests to be performed
+            if previewState.isYolov7Enabled {
+                try imageRequestHandler.perform(self.yolov7Requests)
+            }
+            if previewState.isBestModelEnabled {
+                try imageRequestHandler.perform(self.bestModelRequests)
+            }
         } catch {
             print(error)
         }

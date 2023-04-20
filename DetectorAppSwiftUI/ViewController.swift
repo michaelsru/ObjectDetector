@@ -6,7 +6,9 @@ import Combine
 
 class PreviewState: ObservableObject {
     @Published var isPreviewEnabled: Bool = true
-    @Published var modelName: String = "Not Loaded"
+    @Published var modelName: [String] = []
+    @Published var isYolov7Enabled: Bool = true
+    @Published var isBestModelEnabled: Bool = true
 }
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -21,8 +23,11 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     // Detector
     private var videoOutput = AVCaptureVideoDataOutput()
-    var requests = [VNRequest]()
-    var detectionLayer: CALayer! = nil
+    var yolov7Requests = [VNRequest]()
+    var bestModelRequests = [VNRequest]()
+    var yolov7DetectionLayer: CALayer! = nil
+    var bestModelDetectionLayer: CALayer! = nil
+
     
       
     override func viewDidLoad() {
@@ -33,7 +38,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             self.setupCaptureSession()
             
             self.setupLayers()
-            self.setupDetector()
+//            self.setupDetector()
+            self.yolov7Requests = self.setupDetector(modelName: "yolov7")
+            self.bestModelRequests = self.setupDetector(modelName: "04172023_best")
             
             self.captureSession.startRunning()
         }
@@ -104,7 +111,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     func setupCaptureSession() {
         // Camera input
         guard let videoDevice = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .back).devices.first else {
-//        guard let videoDevice = AVCaptureDevice.default(for: .video) else {
             print("Can not get AVCaptureDevice")
             return
         }
