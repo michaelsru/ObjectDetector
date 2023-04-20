@@ -39,6 +39,11 @@ extension ViewController {
             print("observation")
             guard let objectObservation = observation as? VNRecognizedObjectObservation else { continue }
 
+            // Filter detections below the confidence threshold
+            if objectObservation.confidence < Float(previewState.confidenceThreshold) {
+                continue
+            }
+
             // Transformations
             let objectBounds = VNImageRectForNormalizedRect(objectObservation.boundingBox, Int(screenRect.size.width), Int(screenRect.size.height))
             print("id:\(objectObservation.labels[0].identifier) confidence:\(objectObservation.confidence) (\(round(objectBounds.minX)), \(round(objectBounds.minY))), (\(round(objectBounds.maxX)), \(round(objectBounds.maxY)))")

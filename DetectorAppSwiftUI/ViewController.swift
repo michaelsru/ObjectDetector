@@ -10,6 +10,7 @@ class PreviewState: ObservableObject {
         "yolov7": true,
         "04172023_best": true
     ]
+    @Published var confidenceThreshold: Double = 0.6
 }
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
