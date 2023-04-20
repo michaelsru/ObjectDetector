@@ -5,7 +5,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Text("Model: " + previewState.modelName.joined(separator:", "))
+            Text("Model: " + previewState.models.keys.sorted().joined(separator:", "))
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .padding(.top, 10)
             HostedViewController(previewState: previewState)
@@ -13,13 +13,18 @@ struct ContentView: View {
 
             Toggle("Preview", isOn: $previewState.isPreviewEnabled)
                 .padding()
-            Toggle("Detect COCO", isOn: $previewState.isYolov7Enabled)
-                .padding()
-            Toggle("Detect doors", isOn: $previewState.isBestModelEnabled)
-                .padding()
+
+            ForEach(Array(previewState.models.keys.sorted()), id: \.self) { modelName in
+                Toggle("Detect \(modelName)", isOn: Binding<Bool>(
+                                    get: { previewState.models[modelName] ?? false },
+                                    set: { newValue in previewState.models[modelName] = newValue }
+                                ))
+                    .padding()
+            }
         }
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

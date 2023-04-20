@@ -6,9 +6,10 @@ import Combine
 
 class PreviewState: ObservableObject {
     @Published var isPreviewEnabled: Bool = true
-    @Published var modelName: [String] = []
-    @Published var isYolov7Enabled: Bool = true
-    @Published var isBestModelEnabled: Bool = true
+    @Published var models: [String: Bool] = [
+        "yolov7": true,
+        "04172023_best": true
+    ]
 }
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -23,6 +24,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     // Detector
     private var videoOutput = AVCaptureVideoDataOutput()
+
+    var requests: [String: [VNRequest]] = [:]
     var yolov7Requests = [VNRequest]()
     var bestModelRequests = [VNRequest]()
     var yolov7DetectionLayer: CALayer! = nil
@@ -38,9 +41,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             self.setupCaptureSession()
             
             self.setupLayers()
-//            self.setupDetector()
-            self.yolov7Requests = self.setupDetector(modelName: "yolov7")
-            self.bestModelRequests = self.setupDetector(modelName: "04172023_best")
+            for modelName in previewState.models.keys {
+                requests[modelName] = setupDetector(modelName: modelName)
+            }
             
             self.captureSession.startRunning()
         }

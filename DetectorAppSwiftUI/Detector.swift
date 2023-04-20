@@ -17,7 +17,6 @@ extension ViewController {
             }
 
             let recognitions = VNCoreMLRequest(model: visionModel, completionHandler: completionHandler)
-            previewState.modelName.append(modelName)
             return [recognitions]
         } catch let error {
             print(error)
@@ -94,20 +93,24 @@ extension ViewController {
         textLayer.frame = CGRect(x: bounds.origin.x, y: bounds.origin.y - 20, width: bounds.size.width, height: 20)
         return textLayer
     }
-
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:]) // Create handler to perform request on the buffer
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:])
 
-        do {
-            if previewState.isYolov7Enabled {
-                try imageRequestHandler.perform(self.yolov7Requests)
+        for (modelName, isEnabled) in previewState.models {
+            if isEnabled {
+                do {
+                    try imageRequestHandler.perform(self.requests[modelName]!)
+                } catch {
+                    print(error)
+                }
+            } else {
+                // Remove bounding boxes when the model is disabled
+                let layer = (modelName == "yolov7") ? yolov7DetectionLayer : bestModelDetectionLayer
+                DispatchQueue.main.async {
+                    layer?.sublayers = nil
+                }
             }
-            if previewState.isBestModelEnabled {
-                try imageRequestHandler.perform(self.bestModelRequests)
-            }
-        } catch {
-            print(error)
         }
     }
 }
