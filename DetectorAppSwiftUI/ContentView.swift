@@ -5,6 +5,9 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
+            Text("Model: " + previewState.modelName)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .padding(.top, 10)
             HostedViewController(previewState: previewState)
                 .ignoresSafeArea()
 
@@ -13,7 +16,6 @@ struct ContentView: View {
         }
     }
 }
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

@@ -6,6 +6,7 @@ import Combine
 
 class PreviewState: ObservableObject {
     @Published var isPreviewEnabled: Bool = true
+    @Published var modelName: String = "Not Loaded"
 }
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
