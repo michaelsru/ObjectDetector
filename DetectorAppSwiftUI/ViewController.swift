@@ -7,8 +7,9 @@ import Combine
 class PreviewState: ObservableObject {
     @Published var isPreviewEnabled: Bool = true
     @Published var models: [String: Bool] = [
-        "yolov7": true,
-        "04172023_best": true
+//        "yolov7": true,
+        "best_07122023": true
+//        "04172023_best": true
     ]
     @Published var confidenceThreshold: Double = 0.6
 }

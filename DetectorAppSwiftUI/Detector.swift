@@ -10,7 +10,7 @@ extension ViewController {
         do {
             let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL!))
 
-            let completionHandler: VNRequestCompletionHandler = (modelName == "yolov7") ? { [weak self] request, error in
+            let completionHandler: VNRequestCompletionHandler = (modelName == "best_07122023") ? { [weak self] request, error in
                 self?.detectionDidComplete(request: request, error: error, layer: (self?.yolov7DetectionLayer)!)
             } : { [weak self] request, error in
                 self?.detectionDidComplete(request: request, error: error, layer: (self?.bestModelDetectionLayer)!)
@@ -111,7 +111,7 @@ extension ViewController {
                 }
             } else {
                 // Remove bounding boxes when the model is disabled
-                let layer = (modelName == "yolov7") ? yolov7DetectionLayer : bestModelDetectionLayer
+                let layer = (modelName == "best_07122023") ? yolov7DetectionLayer : bestModelDetectionLayer
                 DispatchQueue.main.async {
                     layer?.sublayers = nil
                 }

@@ -2,3 +2,4 @@ DetectorAppSwiftUI/yolov7.mlmodel filter=lfs diff=lfs merge=lfs -text
 DetectorAppSwiftUI/doors_stairs.mlmodel filter=lfs diff=lfs merge=lfs -text
 DetectorAppSwiftUI/doors_4062023.mlmodel filter=lfs diff=lfs merge=lfs -text
 DetectorAppSwiftUI/04172023_best.mlmodel filter=lfs diff=lfs merge=lfs -text
+DetectorAppSwiftUI/best_07122023.mlmodel filter=lfs diff=lfs merge=lfs -text
